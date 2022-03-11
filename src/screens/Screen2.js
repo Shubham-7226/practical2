@@ -1,14 +1,18 @@
-import React from 'react';
+import React, {useState, useCallback} from 'react';
 import {
   View,
   Text,
   FlatList,
   StyleSheet,
-  TouchableOpacity,
   Button,
+  RefreshControl,
 } from 'react-native';
 import CategoryGridTile from '../components/CategoryGridTile';
 import {CATEGORIES} from '../data/dummy-data';
+
+const wait = timeout => {
+  return new Promise(resolve => setTimeout(resolve, timeout));
+};
 
 const Screen2 = props => {
   const renderGridItem = itemData => {
@@ -20,7 +24,12 @@ const Screen2 = props => {
       />
     );
   };
+  const [refreshing, setRefreshing] = useState(false);
 
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    wait(1000).then(() => setRefreshing(false));
+  }, []);
   return (
     <View style={styles.screen}>
       <FlatList
@@ -28,6 +37,9 @@ const Screen2 = props => {
         data={CATEGORIES}
         renderItem={renderGridItem}
         numColumns={2}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
       />
       <View style={styles.buttonContainer}>
         <Button
